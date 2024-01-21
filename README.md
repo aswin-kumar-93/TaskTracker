@@ -1,6 +1,5 @@
 TaskTracker API
-      - TaskTracker API is a simple task tracking system implemented using ASP.NET Core and Entity Framework. It provides functionality for users to create tasks, update task 
-details, and track task statistics. Additionally, there is an admin interface to validate credentials and retrieve information about tasks and users.
+      - TaskTracker API is a simple task tracking system implemented using ASP.NET Core and Entity Framework. It provides functionality for users to create tasks, update task details, and track task statistics. Additionally, there is an admin interface to validate credentials and retrieve information about tasks and users.
 
 Features:
 User Creation
