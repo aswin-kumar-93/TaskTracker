@@ -20,8 +20,9 @@ Deleting Tasks
 Retrieving Task Statistics
     - Users can able to get task stats, including the total number of tasks and the count of completed tasks for a given user.
 
+
     
-How to run and utilize the TaskTracker API?
+**How to run and utilize the TaskTracker API?**
 
 1. Clone the Repository: Clone the repository to your local machine using Visual Studio's Git integration or Git command line.
 2. Database Setup: Run database migrations to set up the required database.
