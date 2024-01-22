@@ -91,7 +91,7 @@ namespace TaskTracker.Controllers
             }
         }
 
-        [HttpPatch("updatetask/{taskid}")]
+        [HttpPatch("updatetask")]
         [Authorize]
         public async Task<ActionResult> UpdatePatchTasks([FromRoute] int id, [FromBody] JsonPatchDocument taskDocument)
         {
@@ -103,7 +103,7 @@ namespace TaskTracker.Controllers
             return Ok(updatedTask);
         }
 
-        [HttpPatch("updatestatus/{taskId}")]
+        [HttpPatch("updatestatus")]
         [Authorize]
         public async Task<ActionResult> UpdateTaskStatus([FromRoute] int taskId, [FromBody] string newStatus)
         {
@@ -127,8 +127,8 @@ namespace TaskTracker.Controllers
         }
 
 
-        [HttpDelete("deletetask/{taskid}")]
-        [Authorize]
+        [HttpDelete("deletetask")]
+       
         public async Task<ActionResult> DeleteTasks(int taskId)
         {
             try
@@ -147,7 +147,7 @@ namespace TaskTracker.Controllers
             }
         }
 
-        [HttpGet("statistics/{userid}")]
+        [HttpGet("statistics")]
        
         public async Task<ActionResult> GetTaskStatistics(int id)
         {
