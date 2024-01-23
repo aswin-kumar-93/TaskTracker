@@ -125,7 +125,7 @@ namespace TaskTracker.Controllers
 
         [HttpDelete("deletetask")]
         [Authorize]
-        public async Task<ActionResult> DeleteTasks(int taskId)
+        public async Task<ActionResult> DeleteTasks([FromRoute]int taskId)
         {
             try
             {
