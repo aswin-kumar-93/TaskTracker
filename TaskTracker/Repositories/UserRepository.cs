@@ -98,8 +98,8 @@ namespace TaskTracker.Repositories
 
             existingTask.Title = updatedTask.Title;
             existingTask.Description = updatedTask.Description;
-            existingTask.DueDate = updatedTask.DueDate;       
-            existingTask.Status = updatedTask.Status ?? existingTask.Status;
+            existingTask.DueDate = updatedTask.DueDate;
+            existingTask.Status = updatedTask.Status;
 
             await _dbContext.SaveChangesAsync();
             return true;
