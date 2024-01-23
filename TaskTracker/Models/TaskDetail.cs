@@ -13,11 +13,10 @@ namespace TaskTracker.Models
         public string? Description { get; set; }
         public  string? DueDate { get; set; }
 
-        public string? DueTime { get; set; }
-
         public string? Status { get; set; }
 
     }
+
 }
 
 

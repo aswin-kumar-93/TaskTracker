@@ -42,7 +42,6 @@ namespace TaskTracker.Controllers
          }
 
         [HttpPost("login")]
-      
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             var user = _userRepository.ValidateUserCredentials(loginDto.UserName, loginDto.Password);
@@ -52,20 +51,23 @@ namespace TaskTracker.Controllers
                 return Unauthorized("Invalid username or password");
             }
 
-            var token = _authenticateService.GenerateJwtToken(user);
-            
+            var token = _authenticateService.GenerateJwtToken(loginDto);
 
             return Ok(new { Token = token });
         }
 
+
         [HttpGet("gettasks")]
         [Authorize]
-        public async Task<ActionResult> GetTasks(int id)
+        public async Task<ActionResult> GetTasks()
         {
             try
 
             {
-                var taskdetails=await _userRepository.GetTaskDetailsAsync(id);
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var taskdetails=await _userRepository.GetTaskDetailsAsync(int.Parse(userId));
+
                 return Ok(taskdetails);
             }
             catch(Exception ex)
@@ -75,14 +77,18 @@ namespace TaskTracker.Controllers
         }
 
 
-    
+
         [HttpPost("createtasks")]
         [Authorize]
-        public async Task<ActionResult> CreateTasks(TaskCreationDto taskCreation)
+        public async Task<ActionResult> CreateTasks([FromBody] TaskCreationDto taskCreation)
         {
             try
             {
-                var createdTasks=await _userRepository.CreateTaskAsync(taskCreation);
+                
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var createdTasks = await _userRepository.CreateTaskAsync(int.Parse(userId), taskCreation);
+
                 return Ok(createdTasks);
             }
             catch (Exception ex)
@@ -91,33 +97,22 @@ namespace TaskTracker.Controllers
             }
         }
 
-        [HttpPatch("updatetask")]
-        [Authorize]
-        public async Task<ActionResult> UpdatePatchTasks([FromRoute] int id, [FromBody] JsonPatchDocument taskDocument)
-        {
-            var updatedTask = await _userRepository.UpdateEmployeePatchAsync(id, taskDocument);
-            if (updatedTask == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedTask);
-        }
 
-        [HttpPatch("updatestatus")]
+        [HttpPut("updatetask/{taskId}")]
         [Authorize]
-        public async Task<ActionResult> UpdateTaskStatus([FromRoute] int taskId, [FromBody] string newStatus)
+        public async Task<ActionResult> UpdateTaskStatus([FromRoute] int taskId, [FromBody] TaskCreationDto updatedTask)
         {
             try
             {
-                bool updated = await _userRepository.UpdateTaskStatusAsync(taskId, newStatus);
+                bool updated = await _userRepository.UpdateTaskAsync(taskId, updatedTask);
 
                 if (updated)
                 {
-                    return Ok("Task status updated successfully");
+                    return Ok();
                 }
                 else
                 {
-                    return NotFound("Task not found");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -127,8 +122,9 @@ namespace TaskTracker.Controllers
         }
 
 
+
         [HttpDelete("deletetask")]
-       
+        [Authorize]
         public async Task<ActionResult> DeleteTasks(int taskId)
         {
             try
@@ -138,7 +134,7 @@ namespace TaskTracker.Controllers
                 {
                     return NotFound();
                 }
-                return Ok("Task Deleted");
+                return Ok();
                 
             }
             catch (Exception ex)
@@ -149,11 +145,15 @@ namespace TaskTracker.Controllers
 
         [HttpGet("statistics")]
        
-        public async Task<ActionResult> GetTaskStatistics(int id)
+        public async Task<ActionResult> GetTaskStatistics()
         {
             try
             {
-                var statistics = await _userRepository.GetTaskStatisticsAsync(id);
+
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var statistics = await _userRepository.GetTaskStatisticsAsync(int.Parse(userId));
+
                 return Ok(statistics);
             }
             catch (Exception ex)

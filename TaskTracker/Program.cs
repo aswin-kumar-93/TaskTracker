@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using TaskTracker.Services;
+using Microsoft.AspNetCore.Mvc;
+using TaskTracker.DTO;
+using TaskTracker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,4 +81,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
 

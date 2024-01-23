@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TaskTracker.Data;
 using TaskTracker.DTO;
 using TaskTracker.Models;
@@ -59,22 +60,24 @@ namespace TaskTracker.Repositories
 
 
 
-          public async Task<TaskCreationDto> CreateTaskAsync(TaskCreationDto taskCreation)
-          {
-              var taskDetail = new TaskDetail
-              {
-                  UserId =taskCreation.UserId,
-                  Title = taskCreation.Title,
-                  Description = taskCreation.Description,
-                  DueDate = taskCreation.DueDate,
-                  DueTime = taskCreation.DueTime,
-              };
+        public async Task<TaskCreationDto> CreateTaskAsync(int userId, TaskCreationDto taskCreation)
+        {
+            var taskDetail = new TaskDetail
+            {
+                UserId = userId, 
+                Title = taskCreation.Title,
+                Description = taskCreation.Description,
+                DueDate = taskCreation.DueDate,
+                Status = taskCreation.Status,
+                
+            };
 
-              await _dbContext.TaskDetails.AddAsync(taskDetail);
-              await _dbContext.SaveChangesAsync();
+            await _dbContext.TaskDetails.AddAsync(taskDetail);
+            await _dbContext.SaveChangesAsync();
 
-              return taskCreation;
-          }
+            return taskCreation;
+        }
+
 
 
         public async Task<IEnumerable<TaskDetail>> GetTaskDetailsAsync(int userId)
@@ -83,36 +86,25 @@ namespace TaskTracker.Repositories
         }
 
 
-       public  async Task<TaskDetail> UpdateEmployeePatchAsync(int id, JsonPatchDocument taskdetail)
+        public async Task<bool> UpdateTaskAsync(int taskId, TaskCreationDto updatedTask)
         {
-            var tasks=await _dbContext.TaskDetails.FirstOrDefaultAsync(x=>x.Id == id);
-   
-            if (tasks == null)
+            var existingTask = await _dbContext.TaskDetails.FirstOrDefaultAsync(x => x.Id == taskId);
+
+            if (existingTask == null)
             {
-                return tasks;
+                return false;
             }
-            taskdetail.ApplyTo(tasks);
+
+
+            existingTask.Title = updatedTask.Title;
+            existingTask.Description = updatedTask.Description;
+            existingTask.DueDate = updatedTask.DueDate;       
+            existingTask.Status = updatedTask.Status ?? existingTask.Status;
+
             await _dbContext.SaveChangesAsync();
-
-            return tasks;
+            return true;
         }
 
-        public async Task<bool> UpdateTaskStatusAsync(int taskId, string newStatus)
-        {
-           
-                var existingTask = await _dbContext.TaskDetails.FirstOrDefaultAsync(x=>x.Id==taskId);
-
-                if (existingTask == null)
-                {
-                    return false; 
-                }
-
-                existingTask.Status = newStatus;
-
-                _dbContext.TaskDetails.Update(existingTask);
-                await _dbContext.SaveChangesAsync();
-                return true; 
-        }
 
         public async Task<bool> DeleteTaskAsync(int taskId)
         {
@@ -133,7 +125,7 @@ namespace TaskTracker.Repositories
         {
             var totalTasks = await _dbContext.TaskDetails.Where(x => x.UserId == userId).CountAsync();
 
-            var completedTasks = await _dbContext.TaskDetails.Where(x => x.UserId == userId && x.Status == "Completed").CountAsync();
+            var completedTasks = await _dbContext.TaskDetails.Where(x => x.UserId == userId && x.Status == "COMPLETED").CountAsync();
 
             return new TaskStatisticsDto
             {

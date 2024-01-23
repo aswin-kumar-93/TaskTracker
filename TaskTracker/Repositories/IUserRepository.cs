@@ -12,14 +12,15 @@ namespace TaskTracker.Repositories
 
         LoginDto ValidateUserCredentials(string username, string password);
 
-        Task<TaskCreationDto> CreateTaskAsync(TaskCreationDto taskCreation);
+        Task<TaskCreationDto> CreateTaskAsync(int userId, TaskCreationDto taskCreation);
 
         Task<IEnumerable<TaskDetail>> GetTaskDetailsAsync(int userId);
 
 
-        Task<TaskDetail> UpdateEmployeePatchAsync(int id, JsonPatchDocument taskdetail);
+        Task<bool> UpdateTaskAsync(int taskId, TaskCreationDto updatedTask);
 
-        Task<bool> UpdateTaskStatusAsync(int taskId, string newStatus);
+
+
 
         Task<bool> DeleteTaskAsync(int taskId);
 
